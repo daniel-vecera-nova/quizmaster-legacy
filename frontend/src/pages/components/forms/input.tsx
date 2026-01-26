@@ -1,0 +1,34 @@
+import './input.scss'
+
+export interface InputProps<V> {
+    readonly placeholder?: string
+    readonly className?: string
+    readonly id?: string
+    readonly value: V
+    readonly onChange: (value: V) => void
+}
+
+export function Input<V>(type: string, toText: (value: V) => string, toValue: (value: string) => V) {
+    return ({ placeholder, className, id, value, onChange }: InputProps<V>) => (
+        <input
+            type={type}
+            id={id}
+            className={className}
+            placeholder={placeholder}
+            value={toText(value)}
+            onChange={e => onChange(toValue(e.target.value))}
+        />
+    )
+}
+
+export const TextInput = Input<string>(
+    'text',
+    v => v,
+    s => s,
+)
+
+export const NumberInput = Input<number>(
+    'number',
+    v => v.toString(),
+    s => Number(s),
+)

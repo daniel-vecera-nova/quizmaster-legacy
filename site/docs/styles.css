@@ -1,0 +1,57 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+}
+
+h2 {
+    margin: 1.5em 0 0.5em 0;
+}
+
+ul.steps {
+    list-style-type: none;
+
+    padding: 0.5em;
+    border: 1px solid #eee;
+    background-color: #f8f8f8;
+    border-radius: 0.5em;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+
+ul.steps li p {
+    margin: 0;
+}
+
+table {
+    margin-left: 1em;
+    width: auto;
+}
+table thead th {
+    border-bottom: 1px solid #ddd;
+}
+table th {
+    text-align: left;
+}
+table th, table td {
+    padding: 0.25em 0.5em;
+}
+
+img.screenshot {
+    display: block;
+    margin: 1em;
+    width: 600px;
+}
+
+span.given, span.when, span.then {
+    font-weight: bold;
+}
+
+span.given { color: blue }
+span.when { color: orange }
+span.then { color: green }
+
+span.param {
+    font-weight: 600;
+    color: purple;
+}

@@ -1,0 +1,8 @@
+{
+    "extension": [".ts"],
+    "require": ["esbuild-register"],
+    "include": ["src/**/*.ts"],
+    "exclude": ["**/*.d.ts", "node_modules", "**/index.ts"],
+    "reporter": ["raw"],
+    "reportDir": "./coverage/node"
+}

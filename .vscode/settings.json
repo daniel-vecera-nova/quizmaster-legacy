@@ -1,0 +1,19 @@
+{
+    "cucumber.features": ["specs/features/**/*.feature"],
+    "cucumber.glue": ["specs/src/steps/**/*.ts"],
+    "editor.codeActionsOnSave": {
+        "source.fixAll": "explicit"
+    },
+    "java.compile.nullAnalysis.mode": "automatic",
+    "cSpell.words": [
+        "dababase",
+        "devenv",
+        "gradlew",
+        "Playwrigt",
+        "scrumdojo"
+    ],
+    "java.referencesCodeLens.enabled": true,
+    "typescript.preferences.quoteStyle": "single",
+    "typescript.referencesCodeLens.enabled": true,
+    "typescript.referencesCodeLens.showOnAllFunctions": true,
+}

@@ -1,0 +1,55 @@
+.quiz-stats {
+    h2 {
+        margin-bottom: 1.5rem;
+        color: #333;
+    }
+
+    table {
+        width: 100%;
+        max-width: 600px;
+        border-collapse: collapse;
+        background-color: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    thead {
+        background-color: #135ee2;
+        color: #fff;
+    }
+
+    th {
+        padding: 12px 16px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    tbody {
+        tr {
+            border-bottom: 1px solid #e5e7eb;
+            transition: background-color 0.2s ease;
+
+            &:hover {
+                background-color: #f9fafb;
+            }
+
+            &:last-child {
+                border-bottom: none;
+            }
+        }
+    }
+
+    td {
+        padding: 12px 16px;
+        color: #333;
+        font-size: 0.95rem;
+    }
+
+    td:last-child {
+        font-weight: 500;
+        text-align: right;
+    }
+}
+

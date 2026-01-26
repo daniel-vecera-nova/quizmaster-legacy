@@ -1,0 +1,12 @@
+input[type="checkbox"], input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #4f46e5;
+}
+
+label.check {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}

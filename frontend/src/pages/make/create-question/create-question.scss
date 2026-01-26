@@ -1,0 +1,22 @@
+#question-create-form {
+    .answer-row {
+        display: flex;
+        flex-direction: row;
+        align-items: start;
+        gap: .5rem;
+
+        & > input {
+            flex: 0 0 auto;
+            margin-top: .4rem;
+        }
+        div {
+            flex: 1;
+        }
+    }
+}
+
+#question-link, #question-edit-link {
+    margin-top: 15px;
+    display: block;
+    font-size: larger;
+}

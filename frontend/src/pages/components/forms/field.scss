@@ -1,0 +1,13 @@
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+
+    .label {
+        font-weight: bold;
+
+        .required {
+            color: red;
+        }
+    }
+}

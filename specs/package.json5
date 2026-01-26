@@ -1,0 +1,80 @@
+{
+    "schema": "https://json.schemastore.org/package",
+    "name": "quizmaster-specs",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "code:tsc": "tsc -b && rm -f *.tsbuildinfo",
+        "code:lint": "biome lint --fix",
+        "code:format": "biome format --write",
+        "code": "pnpm code:tsc && pnpm code:lint && pnpm code:format",
+
+        "test:playwright": "bddgen && cross-var wait-on tcp:$FE_PORT && playwright test",
+        "test:e2e": "cross-env FE_PORT=8080 pnpm test:playwright",
+        "test:e2e:vite": "cross-env FE_PORT=5173 pnpm test:playwright",
+        "test:e2e:watch": "chokidar features/**/*.feature -c bddgen",
+        "test:e2e:ui": "concurrently 'pnpm test:e2e:watch' 'pnpm test:e2e:vite --ui-host=0.0.0.0 --ui-port=3333'",
+
+        "doc:gen": "node --require esbuild-register src/doc-gen/doc-gen.ts",
+
+        "coverage:clean": "rm -rf coverage",
+        "coverage:test:e2e": "pnpm coverage:clean && c8 --experimental-monocart cross-env ENABLE_COVERAGE=1 pnpm test:e2e",
+        "coverage:report": "node src/coverage/report.js",
+
+        "ci:install:fe": "cd ../frontend && pnpm install",
+        "ci:install:specs": "pnpm install && playwright install --with-deps",
+        "ci:install": "pnpm ci:install:fe && pnpm ci:install:specs",
+
+        "ci:code:fe": "cd ../frontend && tsc -b && biome ci",
+        "ci:code:specs": "tsc -b && biome ci",
+        "ci:code": "pnpm ci:code:fe && pnpm ci:code:specs",
+
+        "ci:build:fe": "cd ../frontend && cross-env FEATURE_FLAG=true pnpm vite build --sourcemap",
+        "ci:build:be": "cd ../backend && cross-env FEATURE_FLAG=true ./gradlew build",
+        "ci:build": "pnpm ci:build:fe && pnpm ci:build:be",
+
+        "ci:bootrun": "cd ../backend && ./gradlew bootRun",
+        "ci:test:e2e": "start-server-and-test 'pnpm ci:bootrun' 8080 'cross-env FEATURE_FLAG=true pnpm test:e2e'",
+        "ci:coverage": "start-server-and-test 'pnpm ci:bootrun' 8080 'cross-env FEATURE_FLAG=true pnpm coverage:test:e2e'"
+    },
+    "dependencies": {
+        "react": "19.0.0",
+        "react-dom": "19.0.0",
+    },
+    "devDependencies": {
+        // Types
+        "@types/node": "22.10.1",
+        "@types/react": "19.0.8",
+        "@types/react-dom": "19.0.3",
+        "typescript": "5.7.2",
+
+        // Linting + formatting
+        "@biomejs/biome": "1.9.4",
+
+        // Bundler
+        "esbuild-register": "3.6.0",
+
+        // BDD
+        "@cucumber/cucumber": "11.1.0",
+        "@playwright/test": "1.49.0",
+        "playwright-bdd": "8.2.0",
+        "start-server-and-test": "2.0.11",
+
+        // Coverage
+        "monocart-coverage-reports": "2.12.6",
+        "c8": "10.1.3",
+
+        // Living docs
+        "@cucumber/gherkin" : "32.1.2",
+        "@cucumber/messages" : "27.2.0",
+        "react-markdown": "10.1.0",
+
+        // Shell utils
+        "chokidar-cli": "3.0.0",
+        "concurrently": "9.1.2",
+        "cross-var": "1.1.0",
+        "cross-env": "7.0.3",
+        "wait-on": "8.0.1",
+    }
+}

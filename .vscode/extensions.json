@@ -1,0 +1,14 @@
+{
+    "recommendations": [
+        "EditorConfig.EditorConfig",
+
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+
+        "ritwickdey.LiveServer",
+
+        "vscode.vscode-java-pack",
+        "ms-playwright.playwright",
+        "cucumberopen.cucumber-official"
+    ]
+}

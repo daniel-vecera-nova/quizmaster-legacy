@@ -1,0 +1,102 @@
+.quiz-details-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.quiz-details-page-title {
+    margin: 2rem 0 1rem 0;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.quiz-details-card {
+    width: 80%;
+    margin: 3rem auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.quiz-details-header {
+    padding: 2rem;
+    background: linear-gradient(135deg, #135ee2 0%, #0d47a1 100%);
+    color: #fff;
+    border-bottom: 1px solid #e5e7eb;
+
+    h2 {
+        margin: 0 0 0.75rem 0;
+        font-size: 1.75rem;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    p {
+        margin: 0;
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.95);
+        line-height: 1.5;
+    }
+}
+
+.quiz-details-body {
+    padding: 2rem;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e5e7eb;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    label {
+        font-weight: 600;
+        color: #333;
+        font-size: 0.95rem;
+    }
+
+    span {
+        color: #666;
+        font-size: 0.95rem;
+        text-align: right;
+        font-weight: 500;
+    }
+}
+
+.quiz-details-footer {
+    padding: 1.5rem 2rem;
+    background-color: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+    text-align: center;
+}
+
+/* Start button styles to match header gradient */
+.quiz-details-footer #start {
+    padding: 0.6rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, #135ee2 0%, #0d47a1 100%);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(13, 71, 161, 0.18);
+    transition: transform 0.08s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+}
+
+.quiz-details-footer #start:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(13, 71, 161, 0.22);
+}
+
+.quiz-details-footer #start:active {
+    transform: translateY(0);
+}

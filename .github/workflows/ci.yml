@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+      - unified-container
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/scrumdojo/quizmaster-java-devenv:v1
+      options: --user vscode
+
+    steps:
+      - name: Start PostgreSQL
+        run: /usr/local/bin/services.sh
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x backend/gradlew
+
+      - name: Install frontend dependencies and Playwright
+        working-directory: specs
+        run: pnpm ci:install
+
+      - name: Type check & lint & format frontend
+        working-directory: specs
+        run: pnpm ci:code
+
+      - name: Build frontend
+        working-directory: specs
+        run: pnpm ci:build
+
+      - name: Run backend tests
+        working-directory: backend
+        run: ./gradlew test
+
+      - name: Run end-to-end tests
+        working-directory: specs
+        run: pnpm ci:test:e2e

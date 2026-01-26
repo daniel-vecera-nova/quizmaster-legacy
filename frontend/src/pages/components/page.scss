@@ -1,0 +1,16 @@
+.page {
+    max-width: 500px;
+    margin: 3rem auto;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    h1 {
+        margin-bottom: 1.5rem;
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #333;
+        text-align: center;
+    }
+}

@@ -1,0 +1,21 @@
+POST http://localhost:8080/api/question HTTP/1.1
+Content-Type: application/json
+
+{
+    "id": 4,
+    "question": "Which city is built on two continents?",
+    "answers": [
+        "Suez",
+        "Istanbul",
+        "Yekaterinburg",
+        "Baku"
+    ],
+    "explanations": [
+        "Though perched on the Suez Canal at the Africa–Asia divide, Suez lies wholly on the African side of the isthmus.",
+        "Straddles the Bosporus Strait, linking Europe and Asia across its city limits.",
+        "Often cited as Europe’s eastern gateway, it actually lies just east of the Ural Mountains, squarely in Asia.",
+        "Located on the western shore of the Caspian Sea, it is entirely in Asia."
+    ],
+    "questionExplanation": "",
+    "correctAnswers": [1]
+}

@@ -1,0 +1,25 @@
+.question-select {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .question-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding: 0.8rem 1rem;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        transition: background 0.2s ease;
+
+        &:hover {
+            background: #f9f9f9;
+        }
+
+        label {
+            font-size: 1rem;
+            color: #444;
+            cursor: pointer;
+        }
+    }
+}

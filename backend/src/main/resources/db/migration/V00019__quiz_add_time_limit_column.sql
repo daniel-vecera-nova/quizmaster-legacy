@@ -1,0 +1,1 @@
+ALTER TABLE quiz ADD COLUMN time_limit INTEGER NULL;

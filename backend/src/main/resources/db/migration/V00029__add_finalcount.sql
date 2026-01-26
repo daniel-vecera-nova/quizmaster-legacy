@@ -1,0 +1,1 @@
+ALTER TABLE quiz ADD COLUMN final_count INTEGER NULL;
