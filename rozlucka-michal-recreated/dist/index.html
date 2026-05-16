@@ -28,8 +28,404 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&display=swap" />
+
+    <!-- Submit-confirm modal styles -->
+    <style>
+      .pm-overlay {
+        position: fixed; inset: 0;
+        background: rgba(28,21,15,0.55);
+        display: none; align-items: center; justify-content: center;
+        z-index: 9999; padding: 20px;
+        animation: pm-fade .15s ease-out;
+      }
+      .pm-overlay.pm-open { display: flex; }
+      @keyframes pm-fade { from { opacity: 0 } to { opacity: 1 } }
+      .pm-card {
+        background: #F5EFE6; color: #1C150F;
+        padding: 28px 24px 24px; border-radius: 22px;
+        max-width: 360px; width: 100%;
+        box-shadow: 0 12px 40px rgba(28,21,15,.28);
+        font-family: 'Inter', system-ui, sans-serif;
+      }
+      .pm-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 28px; font-weight: 500;
+        margin: 0 0 12px; color: #3A2E22; line-height: 1.15;
+      }
+      .pm-body { font-size: 15px; line-height: 1.5; color: #3A2E22; margin: 0 0 22px; }
+      .pm-row { display: flex; flex-direction: column; gap: 10px; }
+      .pm-btn {
+        font: inherit; font-size: 15px; font-weight: 500;
+        padding: 13px 18px; border-radius: 999px; border: 0; cursor: pointer;
+      }
+      .pm-yes { background: #3A2E22; color: #EDE3D4; }
+      .pm-yes:hover { background: #261D14; }
+      .pm-no  { background: transparent; color: #8A7D6B; border: 1px solid #C9B6A0; }
+      .pm-no:hover { background: #EDE3D4; }
+
+      /* Food banner */
+      .pm-food {
+        background: #EDE3D4; color: #1C150F;
+        border: 1px solid #C9B6A0; border-radius: 18px;
+        padding: 16px 18px; margin: 14px auto 0; max-width: 440px;
+        font-family: 'Inter', system-ui, sans-serif;
+      }
+      .pm-food-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 22px; font-weight: 500; color: #3A2E22; margin: 0 0 6px;
+      }
+      .pm-food-lede { font-size: 14px; line-height: 1.45; color: #3A2E22; margin: 0 0 12px; }
+      .pm-food-lede a { color: #B85742; text-decoration: underline; }
+      .pm-food input, .pm-food textarea {
+        font: inherit; font-size: 15px; width: 100%;
+        background: #F5EFE6; color: #1C150F;
+        border: 1px solid #C9B6A0; border-radius: 12px;
+        padding: 10px 12px; margin-top: 6px; box-sizing: border-box;
+      }
+      .pm-food textarea { resize: vertical; min-height: 56px; }
+      .pm-food label { display: block; font-size: 12px; color: #8A7D6B; margin-top: 8px; letter-spacing: .04em; text-transform: uppercase; }
+      .pm-food .pm-food-actions { display: flex; gap: 10px; margin-top: 12px; align-items: center; }
+      .pm-food .pm-btn { padding: 10px 16px; font-size: 14px; }
+      .pm-food-status { font-size: 13px; color: #4A5D3C; }
+      .pm-food-status.err { color: #B85742; }
+      .pm-food-done { font-size: 14px; color: #3A2E22; padding: 6px 0; }
+    </style>
+
     <script type="module" crossorigin src="/assets/index-ChRZua0t.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-C6VvFZPQ.css">
+
+    <!-- pm-shell: confirm modal + form-resume + food banner -->
+    <script>
+    (function () {
+      var API_BASE = "https://rozlucka-api.agenticprague.com";
+      var DRAFT_KEY = "pm.formDraft.v1";
+      var FOOD_DONE_KEY = "pm.foodSubmitted.v1";
+
+      // ---------- bilingual strings ----------
+      var STR = {
+        cs: {
+          confirmTitle: "Poslat Michalovi?",
+          confirmBody: "Jakmile potvrdíš, uvidí tvoji zprávu hned na svém telefonu. 💛",
+          confirmYes: "Ano, poslat",
+          confirmNo: "Vrátit se k úpravám",
+          resumeNote: "Pokračuješ tam, kde jsi skončil/a.",
+          foodTitle: "Co budeš mít k večeři?",
+          foodLede: "Vyber si z menu Restaurace Penzion Na Poště — denní menu nebo stálé menu. <a href=\"https://restauracepenzionnaposte.cz/jidelni-listek/\" target=\"_blank\" rel=\"noopener\">Otevřít menu →</a>",
+          foodName: "Jméno",
+          foodNamePh: "Jana Hofmanová",
+          foodChoice: "Co si dáš",
+          foodChoicePh: "např. Smažený řízek s bramborovým salátem",
+          foodSubmit: "Objednat",
+          foodSending: "Odesílám…",
+          foodOk: "Díky! Předáme do restaurace.",
+          foodErr: "Něco se pokazilo, zkus to prosím znovu.",
+          foodMissing: "Vyplň prosím obě políčka.",
+          foodDone: "Tvoji večeři jsme zaznamenali ✓ ",
+          foodDoneAgain: "Změnit",
+        },
+        en: {
+          confirmTitle: "Send to Michal?",
+          confirmBody: "Once you confirm, he'll see your message on his phone right away. 💛",
+          confirmYes: "Yes, send",
+          confirmNo: "Back to edit",
+          resumeNote: "Continuing from where you left off.",
+          foodTitle: "What would you like for dinner?",
+          foodLede: "Pick something from Restaurace Penzion Na Poště — daily menu or regular menu. <a href=\"https://restauracepenzionnaposte.cz/jidelni-listek/\" target=\"_blank\" rel=\"noopener\">Open the menu →</a>",
+          foodName: "Your name",
+          foodNamePh: "Jana Hofmann",
+          foodChoice: "Your pick",
+          foodChoicePh: "e.g. Schnitzel with potato salad",
+          foodSubmit: "Order",
+          foodSending: "Sending…",
+          foodOk: "Thanks! We'll pass it to the restaurant.",
+          foodErr: "Something went wrong, please try again.",
+          foodMissing: "Please fill both fields.",
+          foodDone: "Your dinner is recorded ✓ ",
+          foodDoneAgain: "Change",
+        },
+      };
+
+      function detectLang() {
+        // peek at the lang chooser in the DOM (active CS/EN button has dark bg)
+        var btns = document.querySelectorAll("button");
+        for (var i = 0; i < btns.length; i++) {
+          var b = btns[i];
+          var t = (b.textContent || "").trim();
+          if ((t === "CS" || t === "EN") && b.style.background && b.style.background !== "transparent") {
+            return t.toLowerCase();
+          }
+        }
+        return document.documentElement.lang === "en" ? "en" : "cs";
+      }
+
+      // ---------- confirm modal ----------
+      var modalEl = null;
+      function ensureModal() {
+        if (modalEl) return modalEl;
+        modalEl = document.createElement("div");
+        modalEl.className = "pm-overlay";
+        modalEl.innerHTML =
+          '<div class="pm-card" role="dialog" aria-modal="true">' +
+            '<h2 class="pm-title" data-key="t"></h2>' +
+            '<p class="pm-body" data-key="b"></p>' +
+            '<div class="pm-row">' +
+              '<button class="pm-btn pm-yes" data-key="y"></button>' +
+              '<button class="pm-btn pm-no"  data-key="n"></button>' +
+            '</div>' +
+          '</div>';
+        document.body.appendChild(modalEl);
+        return modalEl;
+      }
+
+      function showConfirm(lang) {
+        return new Promise(function (resolve) {
+          var s = STR[lang] || STR.cs;
+          var el = ensureModal();
+          el.querySelector('[data-key="t"]').textContent = s.confirmTitle;
+          el.querySelector('[data-key="b"]').textContent = s.confirmBody;
+          var yes = el.querySelector('[data-key="y"]');
+          var no = el.querySelector('[data-key="n"]');
+          yes.textContent = s.confirmYes;
+          no.textContent = s.confirmNo;
+          function done(v) {
+            el.classList.remove("pm-open");
+            yes.onclick = null;
+            no.onclick = null;
+            document.removeEventListener("keydown", onKey);
+            resolve(v);
+          }
+          function onKey(e) {
+            if (e.key === "Escape") done(false);
+            if (e.key === "Enter") done(true);
+          }
+          yes.onclick = function () { done(true); };
+          no.onclick = function () { done(false); };
+          document.addEventListener("keydown", onKey);
+          el.classList.add("pm-open");
+          // focus the cancel button so the user can review before confirming
+          setTimeout(function () { no.focus(); }, 60);
+        });
+      }
+
+      // ---------- fetch interceptor ----------
+      var origFetch = window.fetch.bind(window);
+      window.fetch = async function (input, init) {
+        var url = typeof input === "string" ? input : (input && input.url) || "";
+        var method = ((init && init.method) || (input && input.method) || "GET").toUpperCase();
+        if (url.indexOf("/api/submissions") !== -1 && method === "POST") {
+          var lang = "cs";
+          try {
+            if (init && init.body instanceof FormData) {
+              var v = init.body.get("language");
+              if (v === "en") lang = "en";
+            } else {
+              lang = detectLang();
+            }
+          } catch {}
+          var ok = await showConfirm(lang);
+          if (!ok) {
+            throw new DOMException("Cancelled by user", "AbortError");
+          }
+        }
+        return origFetch(input, init);
+      };
+
+      // ---------- form resume (draft persistence) ----------
+      function saveDraft() {
+        try {
+          var snap = {};
+          var inputs = document.querySelectorAll(
+            'input[type="text"], input[type="email"], textarea'
+          );
+          if (!inputs.length) return;
+          for (var i = 0; i < inputs.length; i++) {
+            var el = inputs[i];
+            if (!el.name && !el.id && !el.placeholder) continue;
+            var key = el.name || el.id || el.placeholder;
+            if (el.value && key) snap[key] = el.value;
+          }
+          if (Object.keys(snap).length) {
+            snap._ts = Date.now();
+            localStorage.setItem(DRAFT_KEY, JSON.stringify(snap));
+          }
+        } catch {}
+      }
+      function restoreDraft() {
+        try {
+          var raw = localStorage.getItem(DRAFT_KEY);
+          if (!raw) return;
+          var snap = JSON.parse(raw);
+          if (!snap || typeof snap !== "object") return;
+          // older than 30 days? drop it
+          if (snap._ts && Date.now() - snap._ts > 30 * 24 * 3600 * 1000) {
+            localStorage.removeItem(DRAFT_KEY);
+            return;
+          }
+          var inputs = document.querySelectorAll(
+            'input[type="text"], input[type="email"], textarea'
+          );
+          var restored = 0;
+          for (var i = 0; i < inputs.length; i++) {
+            var el = inputs[i];
+            var key = el.name || el.id || el.placeholder;
+            if (key && snap[key] && !el.value) {
+              var setter = Object.getOwnPropertyDescriptor(
+                el.tagName === "TEXTAREA" ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype,
+                "value"
+              ).set;
+              setter.call(el, snap[key]);
+              el.dispatchEvent(new Event("input", { bubbles: true }));
+              el.dispatchEvent(new Event("change", { bubbles: true }));
+              restored++;
+            }
+          }
+          return restored;
+        } catch {}
+      }
+      function clearDraft() {
+        try { localStorage.removeItem(DRAFT_KEY); } catch {}
+      }
+      // periodic save + restore on render
+      var saveTimer = null;
+      document.addEventListener("input", function () {
+        if (saveTimer) return;
+        saveTimer = setTimeout(function () { saveTimer = null; saveDraft(); }, 600);
+      });
+      // try to restore as the React form renders (it appears asynchronously)
+      var restoreTries = 0;
+      var restoreInterval = setInterval(function () {
+        var restored = restoreDraft();
+        restoreTries++;
+        if (restored && restored > 0) clearInterval(restoreInterval);
+        if (restoreTries > 20) clearInterval(restoreInterval); // ~10s budget
+      }, 500);
+      // clear draft after successful submit
+      window.addEventListener("pm-form-submitted", clearDraft);
+
+      // hook into the submit response to fire the cleared event + show food
+      var origFetch2 = window.fetch.bind(window);
+      var seenSubmissionId = null;
+      window.fetch = async function (input, init) {
+        var url = typeof input === "string" ? input : (input && input.url) || "";
+        var method = ((init && init.method) || "GET").toUpperCase();
+        var res = await origFetch2(input, init);
+        if (url.indexOf("/api/submissions") !== -1 && method === "POST" && res && res.ok) {
+          try {
+            var clone = res.clone();
+            var j = await clone.json();
+            if (j && j.id) {
+              seenSubmissionId = j.id;
+              window.dispatchEvent(new CustomEvent("pm-form-submitted", { detail: j }));
+              try { localStorage.setItem("pm.lastSubmissionId.v1", j.id); } catch {}
+              setTimeout(mountFoodBanner, 100);
+            }
+          } catch {}
+        }
+        return res;
+      };
+
+      // ---------- food banner ----------
+      function mountFoodBanner() {
+        if (document.getElementById("pm-food-banner")) return;
+        var lang = detectLang();
+        var s = STR[lang] || STR.cs;
+        var existing = (function () {
+          try { return localStorage.getItem(FOOD_DONE_KEY); } catch { return null; }
+        })();
+
+        var host = document.querySelector("main") || document.body;
+        var wrap = document.createElement("div");
+        wrap.id = "pm-food-banner";
+        wrap.className = "pm-food";
+        if (existing) {
+          wrap.innerHTML =
+            '<div class="pm-food-done">' + s.foodDone +
+            '<button class="pm-btn pm-no" id="pm-food-reset" style="margin-left:8px">' + s.foodDoneAgain + '</button></div>';
+          host.appendChild(wrap);
+          document.getElementById("pm-food-reset").onclick = function () {
+            try { localStorage.removeItem(FOOD_DONE_KEY); } catch {}
+            wrap.remove();
+            mountFoodBanner();
+          };
+          return;
+        }
+
+        wrap.innerHTML =
+          '<h3 class="pm-food-title">' + s.foodTitle + '</h3>' +
+          '<p class="pm-food-lede">' + s.foodLede + '</p>' +
+          '<label>' + s.foodName + '</label>' +
+          '<input id="pm-food-name" type="text" placeholder="' + s.foodNamePh + '" />' +
+          '<label>' + s.foodChoice + '</label>' +
+          '<textarea id="pm-food-choice" placeholder="' + s.foodChoicePh + '" rows="2"></textarea>' +
+          '<div class="pm-food-actions">' +
+            '<button id="pm-food-submit" class="pm-btn pm-yes">' + s.foodSubmit + '</button>' +
+            '<span class="pm-food-status" id="pm-food-status"></span>' +
+          '</div>';
+        host.appendChild(wrap);
+
+        // prefill name from form draft if present
+        try {
+          var draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "{}");
+          if (draft.q1_name) document.getElementById("pm-food-name").value = draft.q1_name;
+        } catch {}
+        var lastName = "";
+        try { lastName = localStorage.getItem("pm.lastName.v1") || ""; } catch {}
+        if (lastName) {
+          var n = document.getElementById("pm-food-name");
+          if (n && !n.value) n.value = lastName;
+        }
+
+        document.getElementById("pm-food-submit").onclick = async function () {
+          var nameEl = document.getElementById("pm-food-name");
+          var choiceEl = document.getElementById("pm-food-choice");
+          var status = document.getElementById("pm-food-status");
+          var btn = this;
+          status.classList.remove("err");
+          var name = (nameEl.value || "").trim();
+          var choice = (choiceEl.value || "").trim();
+          if (!name || !choice) {
+            status.textContent = s.foodMissing;
+            status.classList.add("err");
+            return;
+          }
+          btn.disabled = true;
+          status.textContent = s.foodSending;
+          try {
+            var subId = null;
+            try { subId = localStorage.getItem("pm.lastSubmissionId.v1") || null; } catch {}
+            var r = await origFetch2(API_BASE + "/api/food", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ name: name, choice: choice, submissionId: subId }),
+            });
+            if (!r.ok) throw new Error("bad status");
+            status.textContent = s.foodOk;
+            try {
+              localStorage.setItem(FOOD_DONE_KEY, JSON.stringify({ name: name, choice: choice, ts: Date.now() }));
+              localStorage.setItem("pm.lastName.v1", name);
+            } catch {}
+            setTimeout(function () {
+              wrap.remove();
+              mountFoodBanner();
+            }, 1500);
+          } catch (e) {
+            status.textContent = s.foodErr;
+            status.classList.add("err");
+            btn.disabled = false;
+          }
+        };
+      }
+
+      // also surface the food banner on the home screen, for guests who already submitted earlier
+      setTimeout(function () {
+        try {
+          if (localStorage.getItem("pm.lastSubmissionId.v1") || localStorage.getItem(FOOD_DONE_KEY)) {
+            mountFoodBanner();
+          }
+        } catch {}
+      }, 1500);
+    })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

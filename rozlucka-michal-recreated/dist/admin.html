@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="theme-color" content="#1C150F" />
+  <title>Admin — Pro Michala</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Inter:wght@400;500;600&display=swap" />
+  <style>
+    :root { --ink:#1C150F; --soft:#3A2E22; --sage:#8A7D6B; --terra:#B85742; --cream:#F5EFE6; --warm:#EDE3D4; --line:#C9B6A0; --moss:#4A5D3C; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--cream); color: var(--ink); font-family: 'Inter', system-ui, sans-serif; }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 28px 20px 60px; }
+    h1 { font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 36px; margin: 0 0 24px; color: var(--soft); }
+    h2 { font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 24px; margin: 36px 0 12px; color: var(--soft); }
+    .card { background: var(--warm); border: 1px solid var(--line); border-radius: 18px; padding: 18px 18px 16px; margin-top: 12px; }
+    label { display: block; font-size: 12px; color: var(--sage); margin: 10px 0 4px; letter-spacing: .05em; text-transform: uppercase; }
+    input, textarea, select {
+      width: 100%; font: inherit; font-size: 15px; padding: 10px 12px;
+      background: var(--cream); color: var(--ink);
+      border: 1px solid var(--line); border-radius: 12px;
+    }
+    textarea { resize: vertical; min-height: 64px; }
+    button {
+      font: inherit; font-size: 15px; font-weight: 500;
+      padding: 11px 18px; border-radius: 999px; border: 0; cursor: pointer;
+      background: var(--soft); color: var(--warm);
+    }
+    button:hover { background: #261D14; }
+    button.ghost { background: transparent; color: var(--sage); border: 1px solid var(--line); }
+    button.ghost:hover { background: var(--cream); }
+    button.danger { background: var(--terra); }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; align-items: center; }
+    .status { font-size: 14px; color: var(--moss); min-height: 1.2em; }
+    .status.err { color: var(--terra); }
+    .muted { font-size: 13px; color: var(--sage); }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+    th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font-weight: 600; color: var(--soft); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+    .signout { float: right; }
+    .pill { display: inline-block; background: var(--cream); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; font-size: 12px; color: var(--sage); }
+    a { color: var(--terra); }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Pro Michala <span class="pill">admin</span></h1>
+
+  <div id="login-card" class="card" style="display:none">
+    <p>Zadej heslo pro pokračování.</p>
+    <label for="pw">Heslo</label>
+    <input id="pw" type="password" autocomplete="current-password" />
+    <div class="row">
+      <button id="login-btn">Přihlásit</button>
+      <span id="login-status" class="status"></span>
+    </div>
+  </div>
+
+  <div id="app" style="display:none">
+    <button class="ghost signout" id="signout-btn">Odhlásit</button>
+
+    <h2>Push všem ✉</h2>
+    <div class="card">
+      <p class="muted">Pošle notifikaci všem, kdo si zapnuli push (přes „jsem Michal" → Povolit notifikace).</p>
+      <label for="ptitle">Titulek</label>
+      <input id="ptitle" placeholder="Např. „Nová otázka pro vás" maxlength="200" />
+      <label for="pbody">Text</label>
+      <textarea id="pbody" placeholder="Krátká zpráva…" maxlength="500"></textarea>
+      <label for="purl">URL (volitelné, kam má klepnutí vést)</label>
+      <input id="purl" placeholder="/" />
+      <div class="row">
+        <button id="push-btn">Odeslat push všem</button>
+        <span id="push-status" class="status"></span>
+      </div>
+    </div>
+
+    <h2>Večeře 🍽</h2>
+    <div class="card">
+      <p class="muted">Objednávky večeře od hostů. Menu: <a href="https://restauracepenzionnaposte.cz/jidelni-listek/" target="_blank">Restaurace Penzion Na Poště</a>.</p>
+      <div class="row">
+        <button id="food-refresh" class="ghost">Načíst</button>
+        <button id="food-csv">Stáhnout CSV</button>
+        <button id="food-json" class="ghost">Stáhnout JSON</button>
+        <span id="food-status" class="status"></span>
+      </div>
+      <div id="food-list"></div>
+    </div>
+
+    <h2>Zprávy pro Michala 💌</h2>
+    <div class="card">
+      <p class="muted">Všechny příspěvky (texty + odkazy na fotky).</p>
+      <div class="row">
+        <button id="export-csv">Stáhnout CSV</button>
+        <button id="export-json" class="ghost">Stáhnout JSON</button>
+        <span id="export-status" class="status"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var API = "https://rozlucka-api.agenticprague.com";
+  var TOKEN_KEY = "pm.admin.token.v1";
+
+  function tok() { try { return localStorage.getItem(TOKEN_KEY) || ""; } catch { return ""; } }
+  function setTok(v) { try { v ? localStorage.setItem(TOKEN_KEY, v) : localStorage.removeItem(TOKEN_KEY); } catch {} }
+
+  function showApp() {
+    document.getElementById("login-card").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    loadFood();
+  }
+  function showLogin() {
+    document.getElementById("login-card").style.display = "block";
+    document.getElementById("app").style.display = "none";
+    setTimeout(function(){ document.getElementById("pw").focus(); }, 50);
+  }
+
+  async function authCheck(token) {
+    var r = await fetch(API + "/api/admin/food", { headers: { authorization: "Bearer " + token } });
+    return r.ok;
+  }
+
+  document.getElementById("login-btn").onclick = async function() {
+    var pw = document.getElementById("pw").value.trim();
+    var s = document.getElementById("login-status");
+    s.classList.remove("err");
+    if (!pw) { s.textContent = "Zadej heslo."; s.classList.add("err"); return; }
+    s.textContent = "Ověřuji…";
+    var ok = await authCheck(pw);
+    if (ok) { setTok(pw); s.textContent = ""; showApp(); }
+    else { s.textContent = "Neplatné heslo."; s.classList.add("err"); }
+  };
+  document.getElementById("pw").addEventListener("keydown", function(e){
+    if (e.key === "Enter") document.getElementById("login-btn").click();
+  });
+  document.getElementById("signout-btn").onclick = function() {
+    setTok(""); showLogin();
+  };
+
+  // Push broadcast
+  document.getElementById("push-btn").onclick = async function() {
+    var title = document.getElementById("ptitle").value.trim();
+    var body = document.getElementById("pbody").value.trim();
+    var url = document.getElementById("purl").value.trim();
+    var st = document.getElementById("push-status");
+    st.classList.remove("err");
+    if (!title && !body) { st.textContent = "Vyplň aspoň titulek nebo text."; st.classList.add("err"); return; }
+    if (!confirm("Opravdu poslat push všem? Tohle nelze vzít zpět.")) return;
+    st.textContent = "Odesílám…";
+    var r = await fetch(API + "/api/admin/push", {
+      method: "POST",
+      headers: { "content-type": "application/json", authorization: "Bearer " + tok() },
+      body: JSON.stringify({ title: title, body: body, url: url })
+    });
+    if (!r.ok) {
+      if (r.status === 401) { setTok(""); showLogin(); return; }
+      st.textContent = "Chyba: " + r.status;
+      st.classList.add("err");
+      return;
+    }
+    var j = await r.json();
+    st.textContent = "Hotovo — pokus: " + j.attempted + ", doručeno: " + j.delivered + ", vypršelo: " + j.droppedExpired;
+  };
+
+  // Food list
+  async function loadFood() {
+    var st = document.getElementById("food-status");
+    var box = document.getElementById("food-list");
+    st.classList.remove("err");
+    st.textContent = "Načítám…";
+    var r = await fetch(API + "/api/admin/food?format=json", { headers: { authorization: "Bearer " + tok() } });
+    if (!r.ok) {
+      if (r.status === 401) { setTok(""); showLogin(); return; }
+      st.textContent = "Chyba: " + r.status;
+      st.classList.add("err");
+      return;
+    }
+    var j = await r.json();
+    var items = j.food || [];
+    st.textContent = items.length + " objednávek";
+    if (!items.length) { box.innerHTML = '<p class="muted">Zatím nic.</p>'; return; }
+    var html = '<table><thead><tr><th>Čas</th><th>Jméno</th><th>Volba</th><th></th></tr></thead><tbody>';
+    for (var i = 0; i < items.length; i++) {
+      var e = items[i];
+      var t = e.submittedAt ? new Date(e.submittedAt).toLocaleString("cs-CZ") : "";
+      html += '<tr><td>' + esc(t) + '</td><td>' + esc(e.name) + '</td><td>' + esc(e.choice) + '</td>' +
+              '<td><button class="ghost danger" data-id="' + esc(e.id) + '">×</button></td></tr>';
+    }
+    html += '</tbody></table>';
+    box.innerHTML = html;
+    box.querySelectorAll("button[data-id]").forEach(function(btn){
+      btn.onclick = async function() {
+        if (!confirm("Smazat tuto objednávku?")) return;
+        var id = btn.getAttribute("data-id");
+        var r = await fetch(API + "/api/admin/food/" + encodeURIComponent(id), { method: "DELETE", headers: { authorization: "Bearer " + tok() } });
+        if (r.ok) loadFood();
+        else alert("Chyba mazání: " + r.status);
+      };
+    });
+  }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){ return ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" })[c]; }); }
+
+  document.getElementById("food-refresh").onclick = loadFood;
+  document.getElementById("food-csv").onclick = function() { dl("/api/admin/food?format=csv"); };
+  document.getElementById("food-json").onclick = function() { dl("/api/admin/food?format=json"); };
+  document.getElementById("export-csv").onclick = function() { dl("/api/admin/export?format=csv"); };
+  document.getElementById("export-json").onclick = function() { dl("/api/admin/export?format=json"); };
+
+  async function dl(path) {
+    var st = path.indexOf("/food") !== -1 ? document.getElementById("food-status") : document.getElementById("export-status");
+    st.classList.remove("err");
+    st.textContent = "Stahuji…";
+    var r = await fetch(API + path, { headers: { authorization: "Bearer " + tok() } });
+    if (!r.ok) {
+      if (r.status === 401) { setTok(""); showLogin(); return; }
+      st.textContent = "Chyba: " + r.status;
+      st.classList.add("err");
+      return;
+    }
+    var blob = await r.blob();
+    var cd = r.headers.get("content-disposition") || "";
+    var name = (cd.match(/filename="([^"]+)"/) || [])[1] || ("download-" + Date.now());
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = name; a.click();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 5000);
+    st.textContent = "Hotovo: " + name;
+  }
+
+  // boot
+  (async function() {
+    var t = tok();
+    if (t && await authCheck(t)) showApp();
+    else { setTok(""); showLogin(); }
+  })();
+})();
+</script>
+</body>
+</html>

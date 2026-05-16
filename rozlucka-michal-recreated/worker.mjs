@@ -8,6 +8,10 @@
 //   POST   /api/push/subscribe
 //   GET    /api/photo/:id
 //   GET    /api/admin/export?format=json|csv
+//   POST   /api/food                      { name, choice, submissionId? }
+//   GET    /api/admin/food?format=json|csv
+//   DELETE /api/admin/food/:id
+//   POST   /api/admin/push                { title?, body?, url? }   broadcast tickle
 
 const QUESTION_KEYS = [
   "q1_name",
@@ -69,6 +73,10 @@ async function route(request, env, ctx) {
   if (path === "/api/push/vapid-public" && method === "GET") return vapidPublicGet(env);
   if (path === "/api/push/subscribe" && method === "POST") return pushSubscribePost(request, env);
   if (path === "/api/admin/export" && method === "GET") return adminExportGet(request, env);
+  if (path === "/api/food" && method === "POST") return foodPost(request, env, ctx);
+  if (path === "/api/admin/food" && method === "GET") return adminFoodGet(request, env);
+  if (path === "/api/admin/push" && method === "POST") return adminPushPost(request, env, ctx);
+  if (path === "/api/latest-broadcast" && method === "GET") return latestBroadcastGet(env);
 
   let m = path.match(/^\/api\/feed\/([A-Za-z0-9_-]+)\/read$/);
   if (m && method === "POST") return feedReadPost(m[1], env);
@@ -78,6 +86,9 @@ async function route(request, env, ctx) {
 
   m = path.match(/^\/api\/photo\/([A-Za-z0-9_-]+)$/);
   if (m && method === "GET") return photoGet(m[1], env);
+
+  m = path.match(/^\/api\/admin\/food\/([A-Za-z0-9_-]+)$/);
+  if (m && method === "DELETE") return adminFoodDelete(m[1], request, env);
 
   return new Response(JSON.stringify({ error: "not found", path, method }), {
     status: 404,
@@ -178,6 +189,12 @@ async function feedDelete(id, env) {
   return json(200, { ok: true });
 }
 
+async function latestBroadcastGet(env) {
+  const b = await env.KV.get("latest_broadcast", "json");
+  if (!b) return json(200, { broadcast: null });
+  return json(200, { broadcast: b });
+}
+
 function vapidPublicGet(env) {
   if (!env.VAPID_PUBLIC) return jsonErr(503, "VAPID not configured");
   return json(200, { publicKey: env.VAPID_PUBLIC });
@@ -223,11 +240,118 @@ async function photoGet(id, env) {
   });
 }
 
-async function adminExportGet(request, env) {
+function requireAdmin(request, env) {
   const authz = request.headers.get("authorization") || "";
   const expected = env.ADMIN_KEY || "";
   const token = authz.startsWith("Bearer ") ? authz.slice(7) : "";
   if (!expected || !token || !constantTimeEqual(token, expected)) return jsonErr(401, "unauthorized");
+  return null;
+}
+
+async function foodPost(request, env, ctx) {
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonErr(400, "invalid JSON");
+  }
+  const name = str(body?.name).trim().slice(0, 200);
+  const choice = str(body?.choice).trim().slice(0, 1000);
+  if (!name) return jsonErr(400, "name required");
+  if (!choice) return jsonErr(400, "choice required");
+  const submissionId = str(body?.submissionId).trim().slice(0, 64) || undefined;
+  const id = newId();
+  const entry = { id, name, choice, submissionId, submittedAt: Date.now() };
+  await env.KV.put(`food:${id}`, JSON.stringify(entry));
+  return json(200, { ok: true, id, submittedAt: entry.submittedAt });
+}
+
+async function adminFoodGet(request, env) {
+  const unauthorized = requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+  const url = new URL(request.url);
+  const format = (url.searchParams.get("format") || "json").toLowerCase();
+  const list = await env.KV.list({ prefix: "food:" });
+  const entries = (
+    await Promise.all(list.keys.map((k) => env.KV.get(k.name, "json")))
+  ).filter(Boolean).sort((a, b) => (a.submittedAt || 0) - (b.submittedAt || 0));
+  if (format === "csv") {
+    const cols = ["id", "submittedAt", "submittedAtIso", "name", "choice", "submissionId"];
+    const lines = [cols.join(",")];
+    for (const e of entries) {
+      const row = {
+        ...e,
+        submittedAtIso: e.submittedAt ? new Date(e.submittedAt).toISOString() : "",
+      };
+      lines.push(cols.map((c) => csvCell(row[c])).join(","));
+    }
+    return new Response(lines.join("\n"), {
+      headers: {
+        "content-type": "text/csv; charset=utf-8",
+        "content-disposition": `attachment; filename="rozlucka-food-${Date.now()}.csv"`,
+      },
+    });
+  }
+  return new Response(JSON.stringify({ food: entries, count: entries.length }, null, 2), {
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      "content-disposition": `attachment; filename="rozlucka-food-${Date.now()}.json"`,
+    },
+  });
+}
+
+async function adminFoodDelete(id, request, env) {
+  const unauthorized = requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+  await env.KV.delete(`food:${id}`);
+  return json(200, { ok: true });
+}
+
+async function adminPushPost(request, env, ctx) {
+  const unauthorized = requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+  if (!env.VAPID_PRIVATE || !env.VAPID_PUBLIC) return jsonErr(503, "VAPID not configured");
+  let body = {};
+  try {
+    body = (await request.json()) || {};
+  } catch {
+    /* allow empty body — sends an empty tickle */
+  }
+  const broadcast = {
+    title: str(body.title).slice(0, 200) || "Pro Michala",
+    body: str(body.body).slice(0, 500) || "Otevři appku ❤",
+    url: str(body.url).slice(0, 500) || "/",
+    ts: Date.now(),
+  };
+  await env.KV.put("latest_broadcast", JSON.stringify(broadcast), { expirationTtl: 7 * 24 * 3600 });
+  const list = await env.KV.list({ prefix: "push:" });
+  let attempted = 0;
+  let ok = 0;
+  let dropped = 0;
+  await Promise.all(
+    list.keys.map(async (k) => {
+      const sub = await env.KV.get(k.name, "json");
+      if (!sub) return;
+      attempted++;
+      try {
+        const r = await sendEmptyPush(sub, env.VAPID_PUBLIC, env.VAPID_PRIVATE, env.VAPID_SUBJECT);
+        if (r.status === 404 || r.status === 410) {
+          await env.KV.delete(k.name);
+          dropped++;
+        } else if (r.status >= 200 && r.status < 300) {
+          ok++;
+        }
+      } catch {
+        /* ignore individual */
+      }
+    }),
+  );
+  return json(200, { ok: true, attempted, delivered: ok, droppedExpired: dropped, broadcast });
+}
+
+async function adminExportGet(request, env) {
+  const unauthorized = requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
   const url = new URL(request.url);
   const format = (url.searchParams.get("format") || "json").toLowerCase();
   const idx = (await env.KV.get(FEED_INDEX_KEY, "json")) || [];
