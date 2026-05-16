@@ -1,0 +1,7 @@
+name = "rozlucka-michal"
+pages_build_output_dir = "./dist"
+compatibility_date = "2026-05-01"
+
+[[kv_namespaces]]
+binding = "KV"
+id = "e2ebb64fd0544e0e85fb1e73522f59b6"
