@@ -92,12 +92,24 @@
 
     <h2>Zprávy pro Michala 💌</h2>
     <div class="card">
-      <p class="muted">Všechny příspěvky (texty + odkazy na fotky).</p>
+      <p class="muted">Všechny příspěvky z rozlučky (texty + odkazy na fotky).</p>
       <div class="row">
         <button id="export-csv">Stáhnout CSV</button>
         <button id="export-json" class="ghost">Stáhnout JSON</button>
         <span id="export-status" class="status"></span>
       </div>
+    </div>
+
+    <h2>Svatební vzkazy 🐐</h2>
+    <div class="card">
+      <p class="muted">Vzkazy z <a href="https://michal-svatba.pages.dev" target="_blank">michal-svatba.pages.dev</a> — pro Michala, pro Michaelu, pro oba. Heslo na stránku: <code>kozlici-2026</code>.</p>
+      <div class="row">
+        <button id="wed-refresh" class="ghost">Načíst</button>
+        <button id="wed-csv">Stáhnout CSV</button>
+        <button id="wed-json" class="ghost">Stáhnout JSON</button>
+        <span id="wed-status" class="status"></span>
+      </div>
+      <div id="wed-list"></div>
     </div>
   </div>
 </div>
@@ -114,6 +126,7 @@
     document.getElementById("login-card").style.display = "none";
     document.getElementById("app").style.display = "block";
     loadFood();
+    loadWedding();
   }
   function showLogin() {
     document.getElementById("login-card").style.display = "block";
@@ -211,9 +224,70 @@
   document.getElementById("food-json").onclick = function() { dl("/api/admin/food?format=json"); };
   document.getElementById("export-csv").onclick = function() { dl("/api/admin/export?format=csv"); };
   document.getElementById("export-json").onclick = function() { dl("/api/admin/export?format=json"); };
+  document.getElementById("wed-refresh").onclick = loadWedding;
+  document.getElementById("wed-csv").onclick = function() { dl("/api/admin/wedding?format=csv"); };
+  document.getElementById("wed-json").onclick = function() { dl("/api/admin/wedding?format=json"); };
+
+  async function loadWedding() {
+    var st = document.getElementById("wed-status");
+    var box = document.getElementById("wed-list");
+    st.classList.remove("err");
+    st.textContent = "Načítám…";
+    var r = await fetch(API + "/api/admin/wedding?format=json", { headers: { authorization: "Bearer " + tok() } });
+    if (!r.ok) {
+      if (r.status === 401) { setTok(""); showLogin(); return; }
+      st.textContent = "Chyba: " + r.status;
+      st.classList.add("err");
+      return;
+    }
+    var j = await r.json();
+    var items = j.submissions || [];
+    st.textContent = items.length + " vzkazů";
+    if (!items.length) { box.innerHTML = '<p class="muted">Zatím nic.</p>'; return; }
+    var html = '';
+    for (var i = 0; i < items.length; i++) {
+      var e = items[i];
+      var t = e.submittedAt ? new Date(e.submittedAt).toLocaleString("cs-CZ") : "";
+      html += '<div style="border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-top:10px; background:var(--cream)">';
+      html += '<div style="display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">';
+      html += '<div><strong>' + esc(e.name) + '</strong>';
+      if (e.email) html += ' &middot; <span class="muted">' + esc(e.email) + '</span>';
+      html += '<br><span class="muted" style="font-size:12px">' + esc(t) + ' &middot; ' + esc(e.language || 'cs') + '</span></div>';
+      html += '<button class="ghost danger" data-wid="' + esc(e.id) + '">×</button></div>';
+      var sec = [
+        ["Pro Michala 💍", ["him_wish", "him_memory", "him_oneline"]],
+        ["Pro Michaelu 💍", ["her_wish", "her_memory", "her_oneline"]],
+        ["Pro oba 🐐",     ["both_wish", "both_advice", "both_memory"]],
+      ];
+      for (var s = 0; s < sec.length; s++) {
+        var has = sec[s][1].some(function(k){ return e[k]; });
+        if (!has) continue;
+        html += '<div style="margin-top:10px"><div style="font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--sage); margin-bottom:4px">' + sec[s][0] + '</div>';
+        for (var q = 0; q < sec[s][1].length; q++) {
+          var v = e[sec[s][1][q]];
+          if (v) html += '<div style="white-space:pre-wrap; margin:4px 0; font-size:14px;">' + esc(v) + '</div>';
+        }
+        html += '</div>';
+      }
+      html += '</div>';
+    }
+    box.innerHTML = html;
+    box.querySelectorAll("button[data-wid]").forEach(function(btn){
+      btn.onclick = async function() {
+        if (!confirm("Smazat tento vzkaz?")) return;
+        var id = btn.getAttribute("data-wid");
+        var r = await fetch(API + "/api/admin/wedding/" + encodeURIComponent(id), { method: "DELETE", headers: { authorization: "Bearer " + tok() } });
+        if (r.ok) loadWedding();
+        else alert("Chyba mazání: " + r.status);
+      };
+    });
+  }
 
   async function dl(path) {
-    var st = path.indexOf("/food") !== -1 ? document.getElementById("food-status") : document.getElementById("export-status");
+    var st;
+    if (path.indexOf("/food") !== -1) st = document.getElementById("food-status");
+    else if (path.indexOf("/wedding") !== -1) st = document.getElementById("wed-status");
+    else st = document.getElementById("export-status");
     st.classList.remove("err");
     st.textContent = "Stahuji…";
     var r = await fetch(API + path, { headers: { authorization: "Bearer " + tok() } });

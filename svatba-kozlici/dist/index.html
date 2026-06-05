@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="theme-color" content="#FAF6EC" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#1F1810" media="(prefers-color-scheme: dark)" />
+  <title>Michal & Michaela — Kozlíci 🐐</title>
+  <meta name="description" content="Vzkaz pro Michala, Michaelu, nebo pro oba — píšeme si do svatby." />
+
+  <meta property="og:title" content="Michal & Michaela — Kozlíci 🐐" />
+  <meta property="og:description" content="Napiš jim pár vět do manželství." />
+  <meta property="og:locale" content="cs_CZ" />
+  <meta property="og:type" content="website" />
+
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-180.png" />
+  <link rel="icon" href="/icons/icon-192.png" type="image/png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" />
+
+  <style>
+    :root {
+      --ink:#1F1810;          /* deep cocoa */
+      --soft:#3A2E22;          /* warm brown */
+      --sage:#7C8A6A;          /* olive sage */
+      --moss:#4A5D3C;
+      --terra:#B85742;         /* terra accent */
+      --gold:#B89556;          /* warm gold */
+      --cream:#FAF6EC;         /* page bg */
+      --warm:#F1E9D6;          /* card bg */
+      --line:#D9C9A8;          /* hairline */
+      --muted:#8A7D6B;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--cream); color: var(--ink); font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    body { min-height: 100vh; }
+    a { color: var(--terra); }
+
+    /* gate */
+    .gate {
+      position: fixed; inset: 0;
+      background: var(--cream);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 10000; padding: 24px;
+    }
+    .gate-card {
+      background: var(--warm); border: 1px solid var(--line); border-radius: 22px;
+      padding: 28px 24px; max-width: 380px; width: 100%;
+      box-shadow: 0 8px 30px rgba(31,24,16,.08);
+    }
+    .gate-emoji { font-size: 42px; line-height: 1; text-align: center; margin-bottom: 4px; }
+    .gate-title { font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 26px; color: var(--soft); margin: 0 0 6px; text-align: center; }
+    .gate-sub { color: var(--muted); font-size: 14px; text-align: center; margin: 0 0 16px; }
+    .gate label { display:block; font-size:12px; color: var(--muted); margin-bottom:4px; letter-spacing:.06em; text-transform: uppercase; }
+    .gate input { width: 100%; }
+    .gate-status { font-size: 13px; min-height: 1.2em; margin-top: 8px; color: var(--moss); }
+    .gate-status.err { color: var(--terra); }
+
+    input, textarea, button {
+      font: inherit;
+    }
+    input[type="text"], input[type="email"], input[type="password"], textarea {
+      width: 100%; font-size: 15px; padding: 11px 13px;
+      background: var(--cream); color: var(--ink);
+      border: 1px solid var(--line); border-radius: 12px;
+      outline: 0;
+    }
+    input:focus, textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184,149,86,.18); }
+    textarea { resize: vertical; min-height: 72px; line-height: 1.4; }
+    .btn {
+      font-size: 15px; font-weight: 500;
+      padding: 12px 22px; border-radius: 999px; border: 0;
+      background: var(--soft); color: var(--warm);
+      cursor: pointer; transition: background .15s;
+    }
+    .btn:hover { background: #261d14; }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .btn.ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); }
+    .btn.ghost:hover { background: var(--warm); }
+
+    /* layout */
+    .wrap { max-width: 640px; margin: 0 auto; padding: 32px 20px 80px; }
+    .lang {
+      display: inline-flex; padding: 3px; background: #2F2519; border-radius: 999px;
+      font-size: 12px; font-weight: 500; letter-spacing: .06em; margin-bottom: 18px;
+    }
+    .lang button {
+      border: 0; cursor: pointer; padding: 7px 14px; border-radius: 999px; color: #8A7D6B; background: transparent;
+    }
+    .lang button.on { background: #3A2E22; color: var(--warm); }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif; font-weight: 500;
+      font-size: clamp(40px, 8vw, 56px); line-height: 1.05;
+      margin: 12px 0 8px; color: var(--soft);
+      letter-spacing: -.01em;
+    }
+    h1 .amp { color: var(--gold); font-style: italic; font-weight: 400; }
+    h1 .goat { display:inline-block; font-size: .8em; margin-left: .1em; transform: translateY(-.08em); }
+    .lede {
+      font-family: 'Cormorant Garamond', serif; font-style: italic;
+      font-size: 19px; color: var(--soft); line-height: 1.45;
+      margin: 0 0 6px;
+    }
+    .meta { color: var(--muted); font-size: 14px; margin: 0 0 26px; letter-spacing: .02em; }
+
+    .intro {
+      background: var(--warm); border-left: 3px solid var(--gold);
+      border-radius: 4px 14px 14px 4px;
+      padding: 16px 18px; margin-bottom: 28px;
+      font-size: 15px; line-height: 1.55; color: var(--soft);
+    }
+
+    /* form sections */
+    .field { margin-top: 14px; }
+    .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; letter-spacing: .06em; text-transform: uppercase; }
+    .who h2 {
+      font-family: 'Cormorant Garamond', serif; font-weight: 500;
+      font-size: 24px; color: var(--soft); margin: 0;
+    }
+    .who h2 .tag { font-family: 'Inter', sans-serif; font-style: normal; font-size: 11px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; margin-left: 8px; }
+    .who-sub { font-size: 13px; color: var(--muted); margin: 2px 0 0; font-style: italic; }
+    details.who {
+      background: var(--warm); border: 1px solid var(--line); border-radius: 16px;
+      padding: 14px 18px; margin: 14px 0;
+      transition: background .15s;
+    }
+    details.who[open] { background: #F6EEDC; }
+    details.who > summary {
+      cursor: pointer; list-style: none; outline: 0;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    details.who > summary::-webkit-details-marker { display: none; }
+    details.who > summary::after {
+      content: "+"; font-family: 'Cormorant Garamond', serif;
+      font-size: 30px; line-height: 1; color: var(--gold);
+      transition: transform .2s;
+    }
+    details.who[open] > summary::after { transform: rotate(45deg); }
+
+    .submit-row { display: flex; flex-direction: column; gap: 10px; align-items: center; margin-top: 26px; }
+    .submit-status { font-size: 14px; color: var(--moss); min-height: 1.2em; text-align: center; }
+    .submit-status.err { color: var(--terra); }
+    .submit-row .btn { font-size: 16px; padding: 14px 28px; }
+
+    /* modal */
+    .pm-overlay {
+      position: fixed; inset: 0;
+      background: rgba(31,24,16,0.55);
+      display: none; align-items: center; justify-content: center;
+      z-index: 9999; padding: 20px;
+    }
+    .pm-overlay.pm-open { display: flex; }
+    .pm-card { background: var(--cream); color: var(--ink); padding: 28px 24px 24px; border-radius: 22px; max-width: 380px; width: 100%; box-shadow: 0 12px 40px rgba(31,24,16,.28); }
+    .pm-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 500; margin: 0 0 12px; color: var(--soft); line-height: 1.15; }
+    .pm-body { font-size: 15px; line-height: 1.5; color: var(--soft); margin: 0 0 22px; }
+    .pm-row { display: flex; flex-direction: column; gap: 10px; }
+    .pm-row .btn { padding: 12px 18px; }
+    .pm-row .btn.ghost { color: var(--muted); }
+
+    /* thanks */
+    .thanks { text-align: center; padding: 20px 0; }
+    .thanks h2 { font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 36px; color: var(--soft); margin: 0 0 8px; }
+    .thanks .goat { font-size: 56px; line-height: 1; }
+    .thanks p { color: var(--soft); font-size: 16px; line-height: 1.5; margin: 8px 0 18px; }
+
+    /* footer */
+    footer { text-align: center; color: var(--muted); font-size: 13px; margin-top: 32px; padding-top: 18px; border-top: 1px dashed var(--line); }
+    footer .heart { color: var(--terra); }
+
+    @media (max-width: 480px) {
+      .wrap { padding: 22px 16px 60px; }
+      h1 { font-size: 42px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- password gate -->
+<div id="gate" class="gate">
+  <div class="gate-card">
+    <div class="gate-emoji">🐐</div>
+    <h2 class="gate-title" data-i18n="gate.title">Heslo prosím</h2>
+    <p class="gate-sub" data-i18n="gate.sub">Tahle stránka je jen pro pozvané. Heslo najdeš v pozvánce.</p>
+    <label for="gate-pw" data-i18n="gate.label">Heslo</label>
+    <input id="gate-pw" type="password" autocomplete="off" />
+    <div class="submit-row" style="margin-top: 12px;">
+      <button id="gate-btn" class="btn" data-i18n="gate.go">Otevřít</button>
+    </div>
+    <p id="gate-status" class="gate-status"></p>
+    <div style="text-align:center; margin-top:14px;">
+      <span class="lang" style="font-size:11px">
+        <button id="gate-lang-cs" class="on" type="button">CS</button>
+        <button id="gate-lang-en" type="button">EN</button>
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- main app -->
+<div id="app" class="wrap" style="display:none">
+  <div class="lang">
+    <button id="lang-cs" class="on" type="button">CS</button>
+    <button id="lang-en" type="button">EN</button>
+  </div>
+
+  <h1>
+    <span data-i18n="h1.michal">Michal</span>
+    <span class="amp">&amp;</span>
+    <span data-i18n="h1.michaela">Michaela</span>
+    <span class="goat">🐐</span>
+  </h1>
+  <p class="lede" data-i18n="hero.lede">Kozlíci se berou — 6.–7. června 2026, Na Hrbech.</p>
+  <p class="meta" data-i18n="hero.meta">Napiš jim pár vět. Můžeš pro Michala, pro Michaelu, nebo pro oba.</p>
+
+  <div class="intro" data-i18n="intro.body">
+    Žádná otázka není povinná. Vyber si sekci (nebo všechny tři) a napiš, co tě napadne — vzkaz, vzpomínku, radu do manželství, co máš na nich rád/a. Předáme jim to po svatbě.
+  </div>
+
+  <div id="form-area">
+    <div class="field">
+      <label for="f-name" data-i18n="f.name">Tvé jméno *</label>
+      <input id="f-name" type="text" autocomplete="name" maxlength="200" />
+    </div>
+    <div class="field">
+      <label for="f-email" data-i18n="f.email">E-mail (volitelně, ať vám můžou poděkovat)</label>
+      <input id="f-email" type="email" autocomplete="email" maxlength="200" />
+    </div>
+
+    <!-- For Michal -->
+    <details class="who" id="sec-him">
+      <summary>
+        <div>
+          <h2><span data-i18n="him.title">Pro Michala</span><span class="tag" data-i18n="him.tag">ženich</span></h2>
+          <p class="who-sub" data-i18n="him.sub">Něco pro něj samotného.</p>
+        </div>
+      </summary>
+      <div class="field">
+        <label for="him_wish" data-i18n="him.q1">Co bys Michalovi popřál/a do manželství?</label>
+        <textarea id="him_wish" maxlength="8000"></textarea>
+      </div>
+      <div class="field">
+        <label for="him_memory" data-i18n="him.q2">Tvá nejhezčí vzpomínka s ním?</label>
+        <textarea id="him_memory" maxlength="8000"></textarea>
+      </div>
+      <div class="field">
+        <label for="him_oneline" data-i18n="him.q3">Jednou větou: jaký je Michal?</label>
+        <textarea id="him_oneline" maxlength="8000" rows="2"></textarea>
+      </div>
+    </details>
+
+    <!-- For Michaela -->
+    <details class="who" id="sec-her">
+      <summary>
+        <div>
+          <h2><span data-i18n="her.title">Pro Michaelu</span><span class="tag" data-i18n="her.tag">nevěsta</span></h2>
+          <p class="who-sub" data-i18n="her.sub">Něco pro ni samotnou.</p>
+        </div>
+      </summary>
+      <div class="field">
+        <label for="her_wish" data-i18n="her.q1">Co bys Michaele popřál/a do manželství?</label>
+        <textarea id="her_wish" maxlength="8000"></textarea>
+      </div>
+      <div class="field">
+        <label for="her_memory" data-i18n="her.q2">Tvá nejhezčí vzpomínka s ní?</label>
+        <textarea id="her_memory" maxlength="8000"></textarea>
+      </div>
+      <div class="field">
+        <label for="her_oneline" data-i18n="her.q3">Jednou větou: jaká je Michaela?</label>
+        <textarea id="her_oneline" maxlength="8000" rows="2"></textarea>
+      </div>
+    </details>
+
+    <!-- For Both -->
+    <details class="who" id="sec-both">
+      <summary>
+        <div>
+          <h2><span data-i18n="both.title">Pro oba</span><span class="tag" data-i18n="both.tag">manželé</span></h2>
+          <p class="who-sub" data-i18n="both.sub">Pro Kozlíky jako pár.</p>
+        </div>
+      </summary>
+      <div class="field">
+        <label for="both_wish" data-i18n="both.q1">Co jim přeješ do společného života?</label>
+        <textarea id="both_wish" maxlength="8000"></textarea>
+      </div>
+      <div class="field">
+        <label for="both_advice" data-i18n="both.q2">Tvá rada pro jejich manželství?</label>
+        <textarea id="both_advice" maxlength="8000"></textarea>
+      </div>
+      <div class="field">
+        <label for="both_memory" data-i18n="both.q3">Tvůj nejhezčí zážitek s nimi jako párem?</label>
+        <textarea id="both_memory" maxlength="8000"></textarea>
+      </div>
+    </details>
+
+    <div class="submit-row">
+      <button id="submit-btn" class="btn" data-i18n="submit.cta">Poslat vzkaz Kozlíkům 🐐</button>
+      <p id="submit-status" class="submit-status"></p>
+    </div>
+  </div>
+
+  <div id="thanks-area" style="display:none" class="thanks">
+    <div class="goat">🐐</div>
+    <h2 data-i18n="thanks.title">Díky!</h2>
+    <p data-i18n="thanks.body">Předáme to Michalovi a Michaele po svatbě. Můžeš zavřít okno — nebo přidat další vzkaz.</p>
+    <button id="another-btn" class="btn ghost" data-i18n="thanks.another">Napsat další vzkaz</button>
+  </div>
+
+  <footer>
+    <span class="heart">♥</span> &nbsp;Michal &amp; Michaela &nbsp;·&nbsp; 6.–7. 6. 2026 &nbsp;·&nbsp; Na Hrbech
+  </footer>
+</div>
+
+<!-- confirm modal -->
+<div id="confirm" class="pm-overlay">
+  <div class="pm-card" role="dialog" aria-modal="true">
+    <h2 class="pm-title" data-i18n="confirm.title">Poslat Kozlíkům?</h2>
+    <p class="pm-body" data-i18n="confirm.body">Tvůj vzkaz uvidí jen Michal s Michaelou (a my při přípravě svatby). Můžeš ho ještě upravit, pokud chceš.</p>
+    <div class="pm-row">
+      <button id="confirm-yes" class="btn" data-i18n="confirm.yes">Ano, poslat</button>
+      <button id="confirm-no"  class="btn ghost" data-i18n="confirm.no">Vrátit se k úpravám</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var API_BASE = "https://rozlucka-api.agenticprague.com";
+  var PASS_KEY = "kz.sitepass.v1";
+  var DRAFT_KEY = "kz.draft.v1";
+  var LANG_KEY = "kz.lang.v1";
+
+  // ---------- i18n ----------
+  var I18N = {
+    cs: {
+      "gate.title": "Heslo prosím",
+      "gate.sub": "Tahle stránka je jen pro pozvané. Heslo najdeš v pozvánce.",
+      "gate.label": "Heslo",
+      "gate.go": "Otevřít",
+      "gate.bad": "Neplatné heslo.",
+      "h1.michal": "Michal",
+      "h1.michaela": "Michaela",
+      "hero.lede": "Kozlíci se berou — 6.–7. června 2026, Na Hrbech.",
+      "hero.meta": "Napiš jim pár vět. Můžeš pro Michala, pro Michaelu, nebo pro oba.",
+      "intro.body": "Žádná otázka není povinná. Vyber si sekci (nebo všechny tři) a napiš, co tě napadne — vzkaz, vzpomínku, radu do manželství, co máš na nich rád/a. Předáme jim to po svatbě.",
+      "f.name": "Tvé jméno *",
+      "f.email": "E-mail (volitelně, ať vám můžou poděkovat)",
+      "him.title": "Pro Michala", "him.tag": "ženich", "him.sub": "Něco pro něj samotného.",
+      "him.q1": "Co bys Michalovi popřál/a do manželství?",
+      "him.q2": "Tvá nejhezčí vzpomínka s ním?",
+      "him.q3": "Jednou větou: jaký je Michal?",
+      "her.title": "Pro Michaelu", "her.tag": "nevěsta", "her.sub": "Něco pro ni samotnou.",
+      "her.q1": "Co bys Michaele popřál/a do manželství?",
+      "her.q2": "Tvá nejhezčí vzpomínka s ní?",
+      "her.q3": "Jednou větou: jaká je Michaela?",
+      "both.title": "Pro oba", "both.tag": "manželé", "both.sub": "Pro Kozlíky jako pár.",
+      "both.q1": "Co jim přeješ do společného života?",
+      "both.q2": "Tvá rada pro jejich manželství?",
+      "both.q3": "Tvůj nejhezčí zážitek s nimi jako párem?",
+      "submit.cta": "Poslat vzkaz Kozlíkům 🐐",
+      "submit.sending": "Posílám…",
+      "submit.empty": "Napiš prosím aspoň jednu odpověď.",
+      "submit.noname": "Doplň prosím své jméno.",
+      "submit.err": "Něco se pokazilo, zkus to prosím znovu.",
+      "submit.unauth": "Heslo vypršelo — obnov stránku a zadej ho znovu.",
+      "confirm.title": "Poslat Kozlíkům?",
+      "confirm.body": "Tvůj vzkaz uvidí jen Michal s Michaelou (a my při přípravě svatby). Můžeš ho ještě upravit, pokud chceš.",
+      "confirm.yes": "Ano, poslat",
+      "confirm.no": "Vrátit se k úpravám",
+      "thanks.title": "Díky!",
+      "thanks.body": "Předáme to Michalovi a Michaele po svatbě. Můžeš zavřít okno — nebo přidat další vzkaz.",
+      "thanks.another": "Napsat další vzkaz",
+    },
+    en: {
+      "gate.title": "Password please",
+      "gate.sub": "This page is just for guests. You'll find the password in the invitation.",
+      "gate.label": "Password",
+      "gate.go": "Open",
+      "gate.bad": "Wrong password.",
+      "h1.michal": "Michal",
+      "h1.michaela": "Michaela",
+      "hero.lede": "The Goats are getting married — June 6–7, 2026, Na Hrbech.",
+      "hero.meta": "Write them a few lines. To Michal, to Michaela, or to both.",
+      "intro.body": "None of the questions are required. Pick a section (or all three) and write whatever comes to mind — a wish, a memory, advice for marriage, what you love about them. We'll hand it over after the wedding.",
+      "f.name": "Your name *",
+      "f.email": "Email (optional, so they can thank you)",
+      "him.title": "For Michal", "him.tag": "groom", "him.sub": "Something for him alone.",
+      "him.q1": "What's your wish for Michal in marriage?",
+      "him.q2": "Your favorite memory with him?",
+      "him.q3": "In one line: who is Michal?",
+      "her.title": "For Michaela", "her.tag": "bride", "her.sub": "Something for her alone.",
+      "her.q1": "What's your wish for Michaela in marriage?",
+      "her.q2": "Your favorite memory with her?",
+      "her.q3": "In one line: who is Michaela?",
+      "both.title": "For both", "both.tag": "the couple", "both.sub": "For the Goats together.",
+      "both.q1": "What do you wish for their life together?",
+      "both.q2": "Your advice for their marriage?",
+      "both.q3": "Your favorite memory of them as a couple?",
+      "submit.cta": "Send to the Goats 🐐",
+      "submit.sending": "Sending…",
+      "submit.empty": "Please write at least one answer.",
+      "submit.noname": "Please add your name.",
+      "submit.err": "Something went wrong, please try again.",
+      "submit.unauth": "Password expired — refresh the page and enter it again.",
+      "confirm.title": "Send to the Goats?",
+      "confirm.body": "Only Michal and Michaela will see your message (and us while we prep the wedding). You can still edit if you want.",
+      "confirm.yes": "Yes, send",
+      "confirm.no": "Back to edit",
+      "thanks.title": "Thank you!",
+      "thanks.body": "We'll hand it to Michal and Michaela after the wedding. You can close the tab — or add another message.",
+      "thanks.another": "Write another",
+    },
+  };
+
+  var lang = (function () {
+    try { return localStorage.getItem(LANG_KEY) || "cs"; } catch { return "cs"; }
+  })();
+
+  function t(k) { return (I18N[lang] && I18N[lang][k]) || I18N.cs[k] || k; }
+
+  function applyI18n(root) {
+    root = root || document;
+    var els = root.querySelectorAll("[data-i18n]");
+    for (var i = 0; i < els.length; i++) {
+      var k = els[i].getAttribute("data-i18n");
+      var v = t(k);
+      // preserve emoji-containing strings as text (no HTML)
+      els[i].textContent = v;
+    }
+    document.documentElement.lang = lang;
+  }
+
+  function setLang(l) {
+    lang = l === "en" ? "en" : "cs";
+    try { localStorage.setItem(LANG_KEY, lang); } catch {}
+    applyI18n();
+    document.getElementById("lang-cs").classList.toggle("on", lang === "cs");
+    document.getElementById("lang-en").classList.toggle("on", lang === "en");
+    document.getElementById("gate-lang-cs").classList.toggle("on", lang === "cs");
+    document.getElementById("gate-lang-en").classList.toggle("on", lang === "en");
+  }
+
+  document.getElementById("lang-cs").onclick = function () { setLang("cs"); };
+  document.getElementById("lang-en").onclick = function () { setLang("en"); };
+  document.getElementById("gate-lang-cs").onclick = function () { setLang("cs"); };
+  document.getElementById("gate-lang-en").onclick = function () { setLang("en"); };
+
+  // ---------- gate ----------
+  function siteTok() { try { return localStorage.getItem(PASS_KEY) || ""; } catch { return ""; } }
+  function setSiteTok(v) { try { v ? localStorage.setItem(PASS_KEY, v) : localStorage.removeItem(PASS_KEY); } catch {} }
+
+  async function tryGate(pw) {
+    // Validate by attempting a tiny no-content POST (will return 400 for missing fields if password is correct, 401 if wrong)
+    var r = await fetch(API_BASE + "/api/wedding/submissions", {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-site-pass": pw },
+      body: JSON.stringify({}),
+    });
+    return r.status !== 401;
+  }
+
+  async function openGateIfNeeded() {
+    var existing = siteTok();
+    if (existing && await tryGate(existing)) return enterApp();
+    document.getElementById("gate").style.display = "flex";
+    setTimeout(function () { document.getElementById("gate-pw").focus(); }, 100);
+  }
+
+  function enterApp() {
+    document.getElementById("gate").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    restoreDraft();
+  }
+
+  document.getElementById("gate-btn").onclick = async function () {
+    var pw = document.getElementById("gate-pw").value.trim();
+    var st = document.getElementById("gate-status");
+    st.classList.remove("err");
+    if (!pw) { st.textContent = t("gate.bad"); st.classList.add("err"); return; }
+    st.textContent = "…";
+    var ok = await tryGate(pw);
+    if (!ok) { st.textContent = t("gate.bad"); st.classList.add("err"); return; }
+    setSiteTok(pw);
+    st.textContent = "";
+    enterApp();
+  };
+  document.getElementById("gate-pw").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") document.getElementById("gate-btn").click();
+  });
+
+  // ---------- draft persistence ----------
+  var FIELDS = ["f-name", "f-email", "him_wish", "him_memory", "him_oneline",
+                "her_wish", "her_memory", "her_oneline",
+                "both_wish", "both_advice", "both_memory"];
+
+  function saveDraft() {
+    try {
+      var snap = { _ts: Date.now(), _open: {} };
+      for (var i = 0; i < FIELDS.length; i++) {
+        var el = document.getElementById(FIELDS[i]);
+        if (el && el.value) snap[FIELDS[i]] = el.value;
+      }
+      snap._open.him = document.getElementById("sec-him").open;
+      snap._open.her = document.getElementById("sec-her").open;
+      snap._open.both = document.getElementById("sec-both").open;
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(snap));
+    } catch {}
+  }
+  function restoreDraft() {
+    try {
+      var raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      var snap = JSON.parse(raw);
+      if (!snap) return;
+      if (snap._ts && Date.now() - snap._ts > 30 * 24 * 3600 * 1000) {
+        localStorage.removeItem(DRAFT_KEY);
+        return;
+      }
+      for (var i = 0; i < FIELDS.length; i++) {
+        var el = document.getElementById(FIELDS[i]);
+        if (el && snap[FIELDS[i]]) el.value = snap[FIELDS[i]];
+      }
+      if (snap._open) {
+        if (snap._open.him || snap.him_wish || snap.him_memory || snap.him_oneline) document.getElementById("sec-him").open = true;
+        if (snap._open.her || snap.her_wish || snap.her_memory || snap.her_oneline) document.getElementById("sec-her").open = true;
+        if (snap._open.both || snap.both_wish || snap.both_advice || snap.both_memory) document.getElementById("sec-both").open = true;
+      }
+    } catch {}
+  }
+  function clearDraft() { try { localStorage.removeItem(DRAFT_KEY); } catch {} }
+
+  var saveT = null;
+  document.addEventListener("input", function () {
+    if (saveT) return;
+    saveT = setTimeout(function () { saveT = null; saveDraft(); }, 600);
+  });
+  document.addEventListener("toggle", function (e) {
+    if (e.target && e.target.tagName === "DETAILS") saveDraft();
+  }, true);
+
+  // ---------- confirm modal ----------
+  function showConfirm() {
+    return new Promise(function (resolve) {
+      var el = document.getElementById("confirm");
+      el.classList.add("pm-open");
+      var y = document.getElementById("confirm-yes");
+      var n = document.getElementById("confirm-no");
+      function done(v) {
+        el.classList.remove("pm-open");
+        y.onclick = null; n.onclick = null;
+        document.removeEventListener("keydown", onKey);
+        resolve(v);
+      }
+      function onKey(e) {
+        if (e.key === "Escape") done(false);
+        if (e.key === "Enter") done(true);
+      }
+      y.onclick = function () { done(true); };
+      n.onclick = function () { done(false); };
+      document.addEventListener("keydown", onKey);
+      setTimeout(function () { n.focus(); }, 60);
+    });
+  }
+
+  // ---------- submit ----------
+  document.getElementById("submit-btn").onclick = async function () {
+    var st = document.getElementById("submit-status");
+    var btn = this;
+    st.classList.remove("err");
+
+    var name = document.getElementById("f-name").value.trim();
+    if (!name) {
+      st.textContent = t("submit.noname");
+      st.classList.add("err");
+      document.getElementById("f-name").focus();
+      return;
+    }
+
+    var payload = { name: name, email: document.getElementById("f-email").value.trim(), language: lang };
+    var any = false;
+    var keys = ["him_wish", "him_memory", "him_oneline",
+                "her_wish", "her_memory", "her_oneline",
+                "both_wish", "both_advice", "both_memory"];
+    for (var i = 0; i < keys.length; i++) {
+      var v = document.getElementById(keys[i]).value.trim();
+      if (v) { payload[keys[i]] = v; any = true; }
+    }
+    if (!any) {
+      st.textContent = t("submit.empty");
+      st.classList.add("err");
+      return;
+    }
+
+    var ok = await showConfirm();
+    if (!ok) return;
+
+    btn.disabled = true;
+    st.textContent = t("submit.sending");
+
+    try {
+      var r = await fetch(API_BASE + "/api/wedding/submissions", {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-site-pass": siteTok() },
+        body: JSON.stringify(payload),
+      });
+      if (r.status === 401) {
+        setSiteTok("");
+        st.textContent = t("submit.unauth");
+        st.classList.add("err");
+        btn.disabled = false;
+        return;
+      }
+      if (!r.ok) throw new Error("bad status " + r.status);
+      clearDraft();
+      document.getElementById("form-area").style.display = "none";
+      document.getElementById("thanks-area").style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (e) {
+      st.textContent = t("submit.err");
+      st.classList.add("err");
+      btn.disabled = false;
+    }
+  };
+
+  document.getElementById("another-btn").onclick = function () {
+    document.getElementById("thanks-area").style.display = "none";
+    document.getElementById("form-area").style.display = "block";
+    document.getElementById("submit-btn").disabled = false;
+    document.getElementById("submit-status").textContent = "";
+    for (var i = 0; i < FIELDS.length; i++) {
+      if (FIELDS[i] === "f-name" || FIELDS[i] === "f-email") continue;
+      var el = document.getElementById(FIELDS[i]);
+      if (el) el.value = "";
+    }
+    document.getElementById("sec-him").open = false;
+    document.getElementById("sec-her").open = false;
+    document.getElementById("sec-both").open = false;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // ---------- boot ----------
+  applyI18n();
+  setLang(lang);
+  openGateIfNeeded();
+})();
+</script>
+</body>
+</html>
